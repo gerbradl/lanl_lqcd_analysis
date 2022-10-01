@@ -22,35 +22,6 @@ from utilities.h5io import get_dsets
 from utilities.parsing import parse_t_info, parse_file_info 
 from utilities.concat_ import concatenate,concat_dsets
 
-def prepare_xyp(states, u_xp, gv_data):
-    '''
-    scrape input file 
-    '''
-
-    x = copy.deepcopy(u_xp.x)
-    # prepare data y
-    # y = {k: v[x[k]['t_range']]
-    #      for (k, v) in gv_data.items() if k.split('_')[0] in states}
-    
-    n_states = dict()
-    for state in states:
-        for k in x:
-            if state in k and 'mres' not in k:
-                n_states[state] = x[k]['n_state']
-
-    priors = dict()
-    for k in u_xp.priors:
-        for state in states:
-            if 'mres' not in k:
-                k_n = int(k.split('_')[-1].split(')')[0])
-                if state == k.split('(')[-1].split('_')[0] and k_n < n_states[state]:
-                    priors[k] = gv.gvar(u_xp.priors[k].mean, u_xp.priors[k].sdev)
-            else:
-                mres = k.split('_')[0]
-                if mres in states:
-                    priors[k] = gv.gvar(u_xp.priors[k].mean, u_xp.priors[k].sdev)
-
-    return x,priors 
 
 def prepare_xyp(states, u_xp, gv_data):
     '''
