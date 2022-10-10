@@ -15,7 +15,7 @@ import gvar as gv
 import corrfitter as cf
 import matplotlib.pyplot as plt
 import matplotlib
-import fitter.fastfit as fastfit #Lepage's prelim fitter -> p0 to speed up initial fits
+import fitter.prelim_fit as fastfit #Lepage's prelim fitter -> p0 to speed up initial fits
 # import figures as plt
 
 def main():

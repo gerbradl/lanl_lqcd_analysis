@@ -1,6 +1,5 @@
 import sys 
 import argparse
-import argcomplete
 import numpy as np
 import gvar as gv
 import re 
@@ -13,13 +12,15 @@ import time
 import collections
 import importlib
 # sys.path.insert(0,'/home/gbradley/c51_corr_analysis')
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path)
 
-from src.utilities.h5io import get_dsets 
-from src.utilities.parsing import parse_t_info, parse_file_info 
+from utilities.h5io import get_dsets
+from utilities.parsing import parse_t_info, parse_file_info 
 
-from src.utilities.concat_ import concatenate,concat_dsets
-from src.utilities.utils import group_files,parse_dset_address
-from src.utilities.data_options import *
+from utilities.concat_ import concatenate,concat_dsets
+from utilities.utils import group_files,parse_dset_address
+from utilities.data_options import *
 
 class Format(argparse.HelpFormatter):
 
@@ -65,31 +66,33 @@ def main():
     cfg_abbr_sorted = np.sort(cnf_abbr_ascend,axis=None)
     with open("cfg_list.txt","a") as f: 
         print(cfg_abbr_sorted.astype(int).tolist(),file=f)
-    # embed()
     data_file_list = list()
     for dirpath,_,filenames in os.walk(data_dir):
         for f in filenames:
             data_file_list.append(os.path.abspath(os.path.join(dirpath, f)))
     sorted_files = np.sort(data_file_list)
 
+    replace_pattern = dset_replace_patterns
+    # replace_pattern['gA']
+
 
     """ read in pure """ 
     out_file = {}
-    out_file['pion'] = os.path.join(os.getcwd(),"pion.h5")
+    out_file['pion'] = os.path.join(os.getcwd(),"pion_test.h5")
     out_file['pion_SP'] = os.path.join(os.getcwd(),"pion_SP.h5")
-    out_file['proton'] = os.path.join(os.getcwd(),"proton.h5")
+    out_file['proton'] = os.path.join(os.getcwd(),"proton_.h5")
     out_file['proton_all'] = os.path.join(os.getcwd(),"proton_all.h5")
     out_file['proton_SP'] = os.path.join(os.getcwd(),"proton_SP.h5")
-    out_file['3pt'] = os.path.join(os.getcwd(),"3pt_out.h5")
+    out_file['3pt'] = os.path.join(os.getcwd(),"3pt_test.h5")
 
     print("if want to override regex patterns, edit in data_options")
     # TODO this needs to be in a loop, but not working with external module concat_dsets
     # for corr in dset_replace_patterns.keys():
-    # concat_dsets(data_file_list[0:20], out_file['proton_all'], dset_replace_patterns=dset_replace_patterns['proton'],overwrite=False,write_unpaired_dsets=True)
-    # concat_dsets(data_file_list[0:4], out_file['pion'], dset_replace_patterns=dset_replace_patterns['pion'],overwrite=False,write_unpaired_dsets=False)
-    # concat_dsets(data_file_list[0:4], out_file['pion'], dset_replace_patterns=dset_replace_patterns['pion_SP'],overwrite=False,write_unpaired_dsets=True)
+    # concat_dsets(data_file_list[0:20], out_file['proton'], dset_replace_patterns=dset_replace_patterns['proton'],overwrite=True,write_unpaired_dsets=True)
+    #concat_dsets(data_file_list[0:10], out_file['pion'], dset_replace_patterns=dset_replace_patterns['pion'],overwrite=False,write_unpaired_dsets=True)
+    # concat_dsets(data_file_list[0:4], out_file['pion_SP'], dset_replace_patterns=dset_replace_patterns['pion_SP'],overwrite=False,write_unpaired_dsets=True)
     # concat_dsets(data_file_list[0:4], out_file['proton_SP'], dset_replace_patterns=dset_replace_patterns['proton_SP'],overwrite=False,write_unpaired_dsets=True)
-    concat_dsets(data_file_list[0:100], out_file['3pt'], dset_replace_patterns=dset_replace_patterns['gA'],overwrite=True,write_unpaired_dsets=True)
+    # concat_dsets(data_file_list[0:5], out_file['3pt'], dset_replace_patterns=replace_pattern['gA'],overwrite=True,write_unpaired_dsets=True)
     
 
     

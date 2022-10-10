@@ -14,10 +14,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import fitter.corr_functions as cf 
-import fitter.load_data as ld
+# import fitter.load_data as ld
 import fitter.plotting as plot
 import fitter.prelim_fit as prelim #LePage's preliminary corrfitter to generate p0
-import fitter.priors as priors 
+# import fitter.priors as priors 
 
 # from h5io import get_dsets 
 # from IPython import embed

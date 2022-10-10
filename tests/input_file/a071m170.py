@@ -4,7 +4,7 @@ import os
 # import fitter.fastfit as ffit
 
 file_params = {}
-file_params['data_dir'] = '/home/gbradley/c51_corr_analysis/tests/data/E7/' #all configurations
+file_params['data_dir'] = '/home/gmoney/lqcd/lanl_lqcd_analysis/tests/data/E7/' #all configurations
 # file_params['out_dir'] = 'path/to/concateddsets/'
 
 fit_states = ['pion','proton','gA','gV']

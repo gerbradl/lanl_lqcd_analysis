@@ -23,11 +23,12 @@ path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(path)
 from fitter import *
 from utilities import * 
-from tests import * 
+# from tests import * 
 
-import fitter.plotting as visualize
-import fitter.coalesce as coalesce
-import fitter.prelim_fit as prelim 
+import fitter.plotting     as visualize
+import fitter.coalesce     as coalesce
+import fitter.prelim_fit   as prelim 
+import fitter.prepare_data as ld
 
 
 def main():
@@ -41,6 +42,7 @@ def main():
          
         "Features have been added with modularity/user flexibility in mind. However, with this type of analysis,"
         " The human-provided input remains necessary. ")
+        parser.add_argument('--run data options?',    help='if a concatenated h5 file does not already exist, you need to run data options')
         
         parser.add_argument('fit_params',    help='input file to specify fit')
         parser.add_argument('-b', '--block', default=1, type=int,
@@ -104,23 +106,26 @@ def main():
         # ''' data handling options ''' 
 
         '''parsing generated h5 files from run_data_options'''
-        h5f = h5py.File('proton_all.h5','r')
+        h5f = dict()
+        h5f['proton']    = h5py.File('proton_.h5','r')
+        # h5f['proton_SP'] = h5py.File('proton_SP.h5','r')
+        h5f['pion']      = h5py.File('pion_test.h5','r')
+        # h5f['pion_SP']   = h5py.File('pion_SP.h5','r')
+        h5f['3pt']       = h5py.File('3pt_test.h5','r')
+
         string_2pt = '2pt/proton/src10.0_snk10.0/proton/AMA'
-        h5f_3pt = h5py.File('3pt_out.h5','r')
-        c3_data = {'A3' : {}, 'V4' : {}}
-        c2_data = {}
-        # h5f_sp = h5py.File('proton_SP.h5','r')
+        
         string = '2pt/proton/src10.0_snk10.0/proton/AMA'
         string_sp = '2pt/proton_SP/src10.0_snk10.0/proton/AMA'
 
         ''' fill 2pt corr dict'''
         c2_path_concat_data = {}
         c2_path_concat_data['proton'] = {
-                'src':'2pt/proton/src10.0_snk10.0/proton/AMA', 
+                'src' :  '2pt/proton/src10.0_snk10.0/proton/AMA', 
                 'snk' : '2pt/proton_SP/src10.0_snk10.0/proton/AMA'
                                         }
-        c2_path_concat_data['pion'] = {
-                'src':'2pt/pion/src10.0_snk10.0/pion/AMA', 
+        c2_path_concat_data['pion'] =   {
+                'src' :  '2pt/pion/src10.0_snk10.0/pion/AMA', 
                 'snk' : '2pt/pion_SP/src10.0_snk10.0/pion/AMA'
                                         }
 
@@ -140,24 +145,34 @@ def main():
         
 
         to_array = lambda f, path : pd.DataFrame(f[path][:]) #real for v4, imag else
-        # ydata = {}                                        
-        # ydata['proton'] = to_array(h5f,c2_path_concat_data['proton']['src'])
+        ydata = {} # this should just loop over fit_states...                              
+        ydata['proton']    = to_array(h5f['proton'],c2_path_concat_data['proton']['src'])
+        ydata['proton_SP'] = to_array(h5f['proton'],c2_path_concat_data['proton']['snk'])
+        ydata['pion']      = to_array(h5f['pion'],c2_path_concat_data['pion']['src'])
+        ydata['pion_SP']   = to_array(h5f['pion'],c2_path_concat_data['pion']['snk'])
+        # ydata['3pt_13']    = to_array(h5f['3pt'],c3_path_concat_data[int(13)])
+        # ydata['3pt_15']    = to_array(h5f['3pt'],c3_path_concat_data[int(15)])
+        # ydata['3pt_17']    = to_array(h5f['3pt'],c3_path_concat_data[int(17)])
+        # ydata['3pt_19']    = to_array(h5f['3pt'],c3_path_concat_data[int(19)])
+        # ydata['3pt_21']    = to_array(h5f['3pt'],c3_path_concat_data[int(21)])
+        
+
         # ydata_out = ld.bs_to_gvar(data=ydata, corr='proton',bs_N=100) #576?
 
-        print(ydata_out)
+        # print(ydata_out)
         
         temp_data = {'A3':{}, 'V4':{}, 'P5' : {}, 'T2':{}}
-        temp_data['A3'][int(13)] = (to_array(h5f_3pt,c3_path_concat_data[int(13)]['A3']))['im'] 
-        temp_data['A3'][int(15)] = (to_array(h5f_3pt,c3_path_concat_data[int(15)]['A3']))['im'] 
-        temp_data['A3'][int(17)] = (to_array(h5f_3pt,c3_path_concat_data[int(17)]['A3']))['im'] 
-        temp_data['A3'][int(19)] = (to_array(h5f_3pt,c3_path_concat_data[int(19)]['A3']))['im'] 
-        temp_data['A3'][int(21)] = (to_array(h5f_3pt,c3_path_concat_data[int(21)]['A3']))['im'] 
+        temp_data['A3'][int(13)] = (to_array(h5f['3pt'],c3_path_concat_data[int(13)]['A3']))['im'] 
+        temp_data['A3'][int(15)] = (to_array(h5f['3pt'],c3_path_concat_data[int(15)]['A3']))['im'] 
+        temp_data['A3'][int(17)] = (to_array(h5f['3pt'],c3_path_concat_data[int(17)]['A3']))['im'] 
+        temp_data['A3'][int(19)] = (to_array(h5f['3pt'],c3_path_concat_data[int(19)]['A3']))['im'] 
+        temp_data['A3'][int(21)] = (to_array(h5f['3pt'],c3_path_concat_data[int(21)]['A3']))['im'] 
 
-        temp_data['V4'][int(13)] = (to_array(h5f_3pt,c3_path_concat_data[int(13)]['V4']))['re']
-        temp_data['V4'][int(15)] = (to_array(h5f_3pt,c3_path_concat_data[int(15)]['V4']))['re'] 
-        temp_data['V4'][int(17)] = (to_array(h5f_3pt,c3_path_concat_data[int(17)]['V4']))['re'] 
-        temp_data['V4'][int(19)] = (to_array(h5f_3pt,c3_path_concat_data[int(19)]['V4']))['re'] 
-        temp_data['V4'][int(21)] = (to_array(h5f_3pt,c3_path_concat_data[int(21)]['V4']))['re'] 
+        temp_data['V4'][int(13)] = (to_array(h5f['3pt'],c3_path_concat_data[int(13)]['V4']))['re']
+        temp_data['V4'][int(15)] = (to_array(h5f['3pt'],c3_path_concat_data[int(15)]['V4']))['re'] 
+        temp_data['V4'][int(17)] = (to_array(h5f['3pt'],c3_path_concat_data[int(17)]['V4']))['re'] 
+        temp_data['V4'][int(19)] = (to_array(h5f['3pt'],c3_path_concat_data[int(19)]['V4']))['re'] 
+        temp_data['V4'][int(21)] = (to_array(h5f['3pt'],c3_path_concat_data[int(21)]['V4']))['re'] 
         
         # TODO PS,S,T
 
@@ -190,9 +205,9 @@ def main():
         c2pt_data = {}
         
         # # only need real part for 2pt correlators
-        # _ifil = pd.DataFrame(temp_data)
-        # # print(_ifil)
-        # _ifil_sp = pd.DataFrame(ifil_sp)['re'] 
+        _ifil = pd.DataFrame(temp_data)
+        # print(_ifil)
+        _ifil_sp = pd.DataFrame(ifil_sp)['re'] 
         # corrs = {}
         # corrs['proton'] = _ifil.to_numpy()
         # corrs['proton_SP'] = _ifil_sp.to_numpy()
@@ -211,7 +226,7 @@ def main():
         # ydata[int(21)] = 
 
         # print(ydata.keys())
-        ydata_out = ld.bs_to_gvar(data=ydata, corr='proton_SS',bs_N=100) #576?
+        ydata_out = ld.bs_to_gvar(data=ydata, corr='proton',bs_N=100) #576?
 
         x, priors = ld.prepare_xyp(states, fp, ydata_out)
         # print(x,priors)

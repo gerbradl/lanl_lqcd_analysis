@@ -67,12 +67,10 @@ Returns:
 
 
 
-def coalesce_data(corr_raw,bl=9,bl=9, skip_prelim=False,fold=False,nt=None):
+def coalesce_data(corr_raw,bl=9, skip_prelim=False,fold=False,nt=None):
 
     corr_binned = raw_to_binned(
         corr_raw,
-        bl=bl,
-        fold=fold,
         bl=bl,
         fold=fold
     )
