@@ -29,6 +29,7 @@ import fitter.plotting     as visualize
 import fitter.coalesce     as coalesce
 import fitter.prelim_fit   as prelim 
 import fitter.prepare_data as ld
+import fitter.corr_functions as cf
 
 
 def main():
@@ -106,12 +107,14 @@ def main():
         # ''' data handling options ''' 
 
         '''parsing generated h5 files from run_data_options'''
+        import run_data_options as rd
+        # proton_out = 
         h5f = dict()
         h5f['proton']    = h5py.File('proton_.h5','r')
         # h5f['proton_SP'] = h5py.File('proton_SP.h5','r')
         h5f['pion']      = h5py.File('pion_test.h5','r')
         # h5f['pion_SP']   = h5py.File('pion_SP.h5','r')
-        h5f['3pt']       = h5py.File('3pt_test.h5','r')
+        h5f['3pt']       = h5py.File('3pt.h5','r')
 
         string_2pt = '2pt/proton/src10.0_snk10.0/proton/AMA'
         
@@ -155,7 +158,7 @@ def main():
         # ydata['3pt_17']    = to_array(h5f['3pt'],c3_path_concat_data[int(17)])
         # ydata['3pt_19']    = to_array(h5f['3pt'],c3_path_concat_data[int(19)])
         # ydata['3pt_21']    = to_array(h5f['3pt'],c3_path_concat_data[int(21)])
-        
+        ydata
 
         # ydata_out = ld.bs_to_gvar(data=ydata, corr='proton',bs_N=100) #576?
 
@@ -205,16 +208,17 @@ def main():
         c2pt_data = {}
         
         # # only need real part for 2pt correlators
-        _ifil = pd.DataFrame(temp_data)
+        _ifil = pd.DataFrame(ydata['proton'])
         # print(_ifil)
-        _ifil_sp = pd.DataFrame(ifil_sp)['re'] 
-        # corrs = {}
-        # corrs['proton'] = _ifil.to_numpy()
+        # _ifil_sp = pd.DataFrame(ifil_sp)['re'] 
+        corrs = {}
+        corrs['proton'] = _ifil.to_numpy()
         # corrs['proton_SP'] = _ifil_sp.to_numpy()
         # corrs[int(13)] = _ifil_13.to_numpy()
         # corrs.columns
-        # Ncfg = corrs['proton'].shape[0]
+        Ncfg = corrs['proton'].shape[0]
         # bl = 18
+        print(corrs['proton'])
         # Ncfg_3pt = 8232 #c3pt_data[int(13)].shape[0]
         # bl_ = 294
         
@@ -226,7 +230,45 @@ def main():
         # ydata[int(21)] = 
 
         # print(ydata.keys())
-        ydata_out = ld.bs_to_gvar(data=ydata, corr='proton',bs_N=100) #576?
+        # ydata = ld.bs_to_gvar(data=corrs, corr='proton',bs_N=100) #576?
+        data = _ifil['re']
+        ncfg = data.shape[0]
+
+        ncfg= data.shape[0]
+        bl = 14
+        if ncfg % bl == 0:
+            nb = ncfg // bl
+        else:
+            nb = ncfg // bl + 1
+
+        bs_M = data.shape[0]
+        bs_N = 100
+        print(bs_M)
+        bs_list = np.random.randint(low=0, high=bs_M, size=(bs_N, bs_M))
+        
+        temp_dict = {}
+        for key in corrs.keys():
+                temp = corrs[key][bs_list[0, :]]
+                temp_dict[key] = np.mean(temp, axis=0)
+                
+        for k in range(1, bs_N):
+                for key in corrs.keys():
+                        temp = corrs[key][bs_list[k, :]]
+                        temp_dict[key] = np.vstack((temp_dict[key], np.mean(temp, axis=0)))
+        
+        output = {}
+        for key in corrs.keys():
+                mean = np.mean(corrs[key], axis=0)
+                unc = np.cov(temp_dict[key], rowvar=False)
+                output[key] = gv.gvar(mean, unc)
+        print(output)
+
+
+        print(ld.bs_to_gvar(corrs,corr='proton',bs_N=100))
+        
+        data_ = np.reshape(data, bl)
+        print(np.average(data_, axis=0) ,"hi")
+        ydata = ld.raw_to_binned(corrs['proton'],bl=14)
 
         x, priors = ld.prepare_xyp(states, fp, ydata_out)
         # print(x,priors)

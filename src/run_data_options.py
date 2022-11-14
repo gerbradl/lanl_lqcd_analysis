@@ -39,9 +39,7 @@ def main():
 
     parser.add_argument('-input_file',help='input file to specify fit')
     parser.add_argument('-output_dir',help='dir to save concat. h5 files')
-    
-    
-
+    parser.add_argument('-n_cfgs'    ,help='how many configs to concatenate over?')
     parser.add_argument('-bs', '--bootstrap')
     parser.add_argument('-jn', '--jackknife')
     parser.add_argument('-sdev', '--standard_deviation')
@@ -76,11 +74,15 @@ def main():
     # replace_pattern['gA']
 
 
-    """ read in pure """ 
+    """ read in pure 
+    TODO: user should pick which corrs get written out and a name/location
+    TODO: Boram said there is a strict ordering of the dsets that needs to be adhered to 
+    eg. seed 0,a,b,c need to be read in ascending order
+    """ 
     out_file = {}
     out_file['pion'] = os.path.join(os.getcwd(),"pion_test.h5")
     out_file['pion_SP'] = os.path.join(os.getcwd(),"pion_SP.h5")
-    out_file['proton'] = os.path.join(os.getcwd(),"proton_.h5")
+    out_file['proton'] = os.path.join(os.getcwd(),"proton_50.h5")
     out_file['proton_all'] = os.path.join(os.getcwd(),"proton_all.h5")
     out_file['proton_SP'] = os.path.join(os.getcwd(),"proton_SP.h5")
     out_file['3pt'] = os.path.join(os.getcwd(),"3pt_test.h5")
@@ -88,7 +90,7 @@ def main():
     print("if want to override regex patterns, edit in data_options")
     # TODO this needs to be in a loop, but not working with external module concat_dsets
     # for corr in dset_replace_patterns.keys():
-    # concat_dsets(data_file_list[0:20], out_file['proton'], dset_replace_patterns=dset_replace_patterns['proton'],overwrite=True,write_unpaired_dsets=True)
+    concat_dsets(data_file_list[0:50], out_file['proton'], dset_replace_patterns=dset_replace_patterns['proton'],overwrite=True,write_unpaired_dsets=True)
     #concat_dsets(data_file_list[0:10], out_file['pion'], dset_replace_patterns=dset_replace_patterns['pion'],overwrite=False,write_unpaired_dsets=True)
     # concat_dsets(data_file_list[0:4], out_file['pion_SP'], dset_replace_patterns=dset_replace_patterns['pion_SP'],overwrite=False,write_unpaired_dsets=True)
     # concat_dsets(data_file_list[0:4], out_file['proton_SP'], dset_replace_patterns=dset_replace_patterns['proton_SP'],overwrite=False,write_unpaired_dsets=True)
@@ -96,7 +98,11 @@ def main():
     
 
     
-    """ naive read in """
+    """ naive read in
+    
+    TODO: should statistical treatments be included here??
+     """
+    
     # if args.bootstrap:
     
     # if args.jackknife:

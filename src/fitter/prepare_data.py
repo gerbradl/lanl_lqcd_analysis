@@ -1,3 +1,4 @@
+import hashlib
 import numpy as np
 import gvar as gv
 import re 
@@ -99,7 +100,31 @@ class Coalesced_Dataset(object):
             if not np.all(tslice == slices[0]):
                 raise ValueError('check that your timeslices are equivalent for corrs')
 
-def raw_to_binned(data, bl=9):
+def check_data_health(data,md5=None,verbose=None):
+    '''check file integrity/ health of raw data before binned 
+    eg. 
+    file is not corrupted, h5 is readable, 
+    no inf or NANs in dset '''
+    
+    md5 = '5d41402abc4b2a76b9719d911017c592'  
+
+    # Open,close, read file and calculate MD5 on its contents 
+    with open(data, 'rb') as file_to_check:
+        # read contents of the file
+        data = file_to_check.read()    
+        # pipe contents of the file through
+        md5_returned = hashlib.md5(data).hexdigest()
+
+    # Finally compare original MD5 with freshly calculated
+    if md5 == md5_returned:
+        print("MD5 verified.")
+    else:
+        print ("MD5 verification failed!.")
+
+
+    # return data
+
+def raw_to_binned(data, bl=None):
     ''' data shape is [Ncfg, others]
         bl = block length in configs
     '''
