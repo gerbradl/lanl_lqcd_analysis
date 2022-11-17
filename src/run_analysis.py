@@ -1,3 +1,4 @@
+from multiprocessing.heap import Arena
 import sys
 import lsqfit
 import gvar as gv
@@ -181,12 +182,6 @@ def main():
 
         print(temp_data)
 
-        # temp_data['P5'][int(13)] = (to_array(h5f_3pt,c3_path_concat_data[int(13)]['P5']))['re']
-        # temp_data['P5'][int(15)] = (to_array(h5f_3pt,c3_path_concat_data[int(15)]['P5']))['re'] 
-        # temp_data['P5'][int(17)] = (to_array(h5f_3pt,c3_path_concat_data[int(17)]['P5']))['re'] 
-        # temp_data['P5'][int(19)] = (to_array(h5f_3pt,c3_path_concat_data[int(19)]['P5']))['re'] 
-        # temp_data['P5'][int(21)] = (to_array(h5f_3pt,c3_path_concat_data[int(21)]['P5']))['re'] 
-
         n_cfg = []
         for n_cfg in temp_data['A3'].values():
                 print(n_cfg.shape[0])
@@ -216,11 +211,22 @@ def main():
         # corrs['proton_SP'] = _ifil_sp.to_numpy()
         # corrs[int(13)] = _ifil_13.to_numpy()
         # corrs.columns
-        Ncfg = corrs['proton'].shape[0]
+        ncfg,nt = corrs['proton'].shape
+        nb = np.floor_divide(ncfg,8)
+        bin_empty = np.zeros((nb,nt),dtype=float)
+
+
+
+        for nbs in np.arange(nb):
+                for t_ in np.arange(nt):
+                        bin_empty[nbs,t_] = np.mean(corrs['proton'][nbs*8:(nbs+1)*8,t_])
+        print(bin_empty)
+                        
         # bl = 18
-        print(corrs['proton'])
+        print(corrs['proton'].shape,"shape is")
         # Ncfg_3pt = 8232 #c3pt_data[int(13)].shape[0]
         # bl_ = 294
+        
         
         ydata = {}
         
@@ -232,9 +238,16 @@ def main():
         # print(ydata.keys())
         # ydata = ld.bs_to_gvar(data=corrs, corr='proton',bs_N=100) #576?
         data = _ifil['re']
-        ncfg = data.shape[0]
-
-        ncfg= data.shape[0]
+        ncfg= data.shape
+        print(ncfg,"shape")
+        bin_length = 8
+        nb = np.floor_divide(ncfg,bin_length)
+        
+        ncfg_ = np.arange(ncfg)
+        front = data[:ncfg // 2+1]
+        back = data[(ncfg-ncfg_) %ncfg][:ncfg // 2+1]
+        
+        print(front)
         bl = 14
         if ncfg % bl == 0:
             nb = ncfg // bl
