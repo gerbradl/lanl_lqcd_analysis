@@ -1,3 +1,12 @@
+'''
+plot raw correlators
+effective mass plot 
+effective wf overlap plot 
+effective mass stability plot 
+Summary plot 
+TODO time history plot (correlator for each configuration on a single plot)
+'''
+
 import matplotlib.pyplot as plt
 import numpy as np
 import os

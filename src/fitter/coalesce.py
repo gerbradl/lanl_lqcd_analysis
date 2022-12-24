@@ -652,7 +652,7 @@ def count_nstates(params, key_map=None, tags=''):
     """
     Count the number of states used in fit.
     Default behavior assumes names 'SS' and 'PS' for src and
-    snk, respectively.
+    snk, respectively. TODO this can be changed in input file 
     """
     if tags is None:
         tags = Tags(src='SS', snk='PS')
@@ -684,13 +684,13 @@ def compute_yfit(ds, params):
         yfit[tag] = model.fitfcn(t=tdata, p=params)
     return yfit
 
-class C_2pt_Analysis(object):
+class C_2pt_Coalesce(object):
     """
     A basic fitter class for two-point correlation functions.
     Args:
         c2: corr_functions.C_2pt object
     Returns:
-        lsqfit fit object
+        lsqfit fit object TODO multifitter object for multiple models 
     """
     def __init__(self, c2):
         self.tag = c2.tag
@@ -730,7 +730,7 @@ class C_2pt_Analysis(object):
         #     fit = None
         return fit
 
-class C_3pt_Analysis(object):
+class C_3pt_Coalesce(object):
     '''
     Perform simult. fits to 2pt, 3pt fcns
     Output:
@@ -881,7 +881,7 @@ class C_3pt_Analysis(object):
 
         # def plot_gV():
 
-class Ratio:
+class Ratio_Coalesce:
     '''
     Analysis of :math:`\< \frac{C3pt}{C2pt} \>`
     Returns:

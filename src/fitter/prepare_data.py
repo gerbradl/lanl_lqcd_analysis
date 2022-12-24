@@ -299,6 +299,7 @@ def mean_and_std_dev(data, axis=0):
 
 def parse_corr_block(file):
     """
+    Note: LANL data is constructed like so, however it is inefficient to convert h5 datasets to txt files..
     Parses a correlator data block into lists of t, Re(C), Im(C).
     Args:
         ifile: if .txt file, routine will work. TODO add to class of parsing routines

@@ -16,8 +16,6 @@ import pandas as pd
 
 np.seterr(invalid='ignore') 
 
-
-
 # lanl_analysis_suite libs.modules
 # sys.path.insert(0,'./lqcd_corr_analysis')
 path = os.path.dirname(os.path.abspath(__file__))
@@ -112,9 +110,7 @@ def main():
         # proton_out = 
         h5f = dict()
         h5f['proton']    = h5py.File('proton_.h5','r')
-        # h5f['proton_SP'] = h5py.File('proton_SP.h5','r')
         h5f['pion']      = h5py.File('pion_test.h5','r')
-        # h5f['pion_SP']   = h5py.File('pion_SP.h5','r')
         h5f['3pt']       = h5py.File('3pt.h5','r')
 
         string_2pt = '2pt/proton/src10.0_snk10.0/proton/AMA'
@@ -122,7 +118,9 @@ def main():
         string = '2pt/proton/src10.0_snk10.0/proton/AMA'
         string_sp = '2pt/proton_SP/src10.0_snk10.0/proton/AMA'
 
-        ''' fill 2pt corr dict'''
+        ''' fill 2pt corr dict with paths to concatenated dset produced by run_data_options
+        TODO: should take output file name and immediately parse the dset 
+        '''
         c2_path_concat_data = {}
         c2_path_concat_data['proton'] = {
                 'src' :  '2pt/proton/src10.0_snk10.0/proton/AMA', 
@@ -283,7 +281,6 @@ def main():
         print(np.average(data_, axis=0) ,"hi")
         ydata = ld.raw_to_binned(corrs['proton'],bl=14)
 
-        x, priors = ld.prepare_xyp(states, fp, ydata_out)
         # print(x,priors)
         c2pt = {}
         c2_src = cf.C_2pt(tag='proton', ydata=c2_path_concat_data['proton'],p=priors)
